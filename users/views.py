@@ -35,6 +35,7 @@ class UserRegView(viewsets.ModelViewSet):
 
 class UserLoginView(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
         username = request.data['username']
@@ -57,17 +58,75 @@ class UserLoginView(viewsets.ModelViewSet):
 
             token = jwt.encode(payload, 'secret', algorithm='HS256').decode('utf-8')
 
-            response = {
+            response = Response()
+            response.set_cookie(key='jwt', value=token, httponly=True)
+
+            response.data = {
                 'token': token,
-                "message": username + " Logged In Successfully!"
+                "message": user.full_name + " Logged In Successfully!"
             }
 
-            return Response(response)
+            return response
 
         except Exception as e:
-            response = {'success': False,
+            response = {
+                'success': False,
                 'statuscode': status.HTTP_400_BAD_REQUEST,
                 'message': 'Invalid username or password',
                 'Errors': str(e)
             }
             return Response(response)
+
+
+class UserListView(viewsets.ModelViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
+
+    def list(self, request, *args, **kwargs):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('Authentication Failed! Please login first...')
+
+        else:
+            try:
+                users = User.objects.all()
+                serializer = UserSerializer(users, many=True)
+
+                response = {
+                    'success':True,
+                    'statuscode':status.HTTP_200_OK,
+                    'data':serializer.data,
+                    'message': "View users Successful"
+                }
+
+                return Response(response)
+
+            except Exception as e:
+                response = {
+                    'success': False,
+                    'statuscode': status.HTTP_400_BAD_REQUEST,
+                    'message': 'User list not found',
+                    'Errors': str(e)
+                }
+                return Response(response)
+
+class UserLogoutView(viewsets.ModelViewSet):
+
+    def create(self, request, *args, **kwargs):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('Already logged out!')
+
+        else:
+            response = Response()
+
+            response.delete_cookie('jwt')
+            response.data = {
+                'message': 'You have been logged out!'
+            }
+
+            return response
+
+
