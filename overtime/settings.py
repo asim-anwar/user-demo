@@ -84,7 +84,7 @@ DATABASES = {
         'NAME': 'user_demo',
         'USER': 'root',
         'PASSWORD': 'admin',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
