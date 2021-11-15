@@ -33,10 +33,10 @@ class UserRegView(viewsets.ModelViewSet):
             }
             return Response(response)
 
-class UserLoginView(APIView):
+class UserLoginView(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
 
-    def post(self, request):
+    def create(self, request, *args, **kwargs):
         username = request.data['username']
         password = request.data['password']
 
@@ -68,6 +68,6 @@ class UserLoginView(APIView):
             response = {'success': False,
                 'statuscode': status.HTTP_400_BAD_REQUEST,
                 'message': 'Invalid username or password',
-                'Errors': ''
+                'Errors': str(e)
             }
             return Response(response)

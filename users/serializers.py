@@ -5,7 +5,7 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'password']
+        fields = ['id','username', 'email', 'password', 'full_name', 'mobile_number']
         extra_kwargs = {
             'password':{'write_only':True}
         }
@@ -19,16 +19,3 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-# class UserLoginSerializer(serializers.Serializer):
-#     username = serializers.CharField(max_length=255, required=False)
-#     password = serializers.CharField(max_length=128, write_only=True)
-#     token = serializers.CharField(max_length=255, read_only=True)
-#
-#     def validation(self, data):
-#         username = data.get("username", None)
-#         # email = data.get("username", None)
-#         password = data.get("password", None)
-#         user = authenticate(username=username, password=password)
-#
-#         if user is None:
-#             raise serializers.ValidationError()

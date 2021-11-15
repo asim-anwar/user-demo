@@ -6,10 +6,10 @@ from .views import *
 
 router = DefaultRouter()
 router.register('register', UserRegView, basename='user-register')
-# router.register('login', UserLoginView, basename='user-login')
+router.register('login', UserLoginView, basename='user-login')
 
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('login', UserLoginView.as_view(), name='user-login')
+    # path('login', UserLoginView.as_view(), name='user-login')
 ]
