@@ -16,20 +16,28 @@ class UserRegView(viewsets.ModelViewSet):
     users = User.objects.all()
 
     def create(self, request, *args, **kwargs):
-        serializer_data = UserSerializer(data=request.data)
-        if serializer_data.is_valid():
-            serializer_data.save()
-            response = {
-                "message": "user create success",
-                "status": status.HTTP_201_CREATED
-            }
-            return Response(response)
+        try:
+            serializer_data = UserSerializer(data=request.data)
+            if serializer_data.is_valid():
+                serializer_data.save()
+                response = {
+                    "message": "user create success",
+                    "status": status.HTTP_201_CREATED
+                }
+                return Response(response)
 
-        else:
+            else:
+                response = {
+                    "message": "create error",
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    "error": serializer_data.errors
+                }
+                return Response(response)
+        except Exception as e:
             response = {
-                "message": "create error",
+                "message": "user create error",
                 "status": status.HTTP_400_BAD_REQUEST,
-                "error": serializer_data.errors
+                "error": str(e)
             }
             return Response(response)
 
